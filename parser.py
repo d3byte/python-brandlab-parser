@@ -1,99 +1,34 @@
-from urllib.request import urlopen as uReq
-from bs4 import BeautifulSoup as soup
 import requests
 import json
-
-
-# Данные для логина
-url = 'https://users.wix.com/wix-sm/api/member/login'
-
+from data_handler import handleData
+offset = 40
+url = 'https://forums.wix.com/_api/posts?categoryId=597751e9a5026f001007ec96&offset=' + str(offset) + '&size=' + str(size)
 headers = {
     'Accept': 'application/json',
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
     'Connection': 'keep-alive',
     'Content-Type': 'application/x-www-form-urlencoded',
-    'Host': 'users.wix.com',
+    'Cookie': 'XSRF-TOKEN=1512583954|iO4VQYfdvt0F; userType=ANONYMOUS; _wix_browser_sess=29b84120-eacd-47cc-9308-a155a146f40c; incap_ses_584_138990=qapfCi4fm1YU7rIKYckaCCkzKFoAAAAAoMA6Ojd6hlvXBa4GY32P0Q==; incap_ses_584_133961=Zie8Be9e8WO0BsMKYckaCERLKFoAAAAAk0yr8rAM6loflnwHC3fylA==; _wixUIDX=null-user-id; _wixCIDX=36ec823e-fc3d-4a15-afe9-e789319eb8f7; __utma=37294626.77352872.1512590152.1512590159.1512590159.1; __utmc=37294626; __utmz=37294626.1512590159.1.1.utmcsr=ru.wix.com|utmccn=(referral)|utmcmd=referral|utmcct=/; _ga=GA1.2.77352872.1512590152; _wixAB3=43781#1',
+    'instance': 'NOn4aAVpnHrpF5r_wYrFp-r7Q1qf8Q71RQfM3qo7Pcs.eyJpbnN0YW5jZUlkIjoiOGExMzUwMzMtOThmNS00YTBjLWFlYWEtOGZiMGJhZGI4ZTFmIiwiYXBwRGVmSWQiOiIxNDcyNGYzNS02Nzk0LWNkMWEtMDI0NC0yNWZkMTM4ZjkyNDIiLCJzaWduRGF0ZSI6IjIwMTctMTItMDZUMjE6Mjg6NTIuMDgzWiIsInVpZCI6ImU3YjIwY2FmLWM5ODctNDVkNC1hMDAwLTVkYzg1ZWQ1NTkzZCIsImlwQW5kUG9ydCI6Ijk1Ljg0LjE4Mi41Mi81NDE5NCIsInZlbmRvclByb2R1Y3RJZCI6bnVsbCwiZGVtb01vZGUiOmZhbHNlLCJhaWQiOiJlN2IyMGNhZi1jOTg3LTQ1ZDQtYTAwMC01ZGM4NWVkNTU5M2QiLCJiaVRva2VuIjoiYTc2YWRlMWUtNjRiZi0wODg2LTI5ZGUtMjRhOTY4YmJkMzlmIiwic2l0ZU93bmVySWQiOiIxMDRlM2M3MC03Yzk4LTQ5YTMtYTk4Yy1hZGVjZmIyMGY4MjkifQ',
+    'Refer': 'https://forums.wix.com/fakultet-volka?cacheKiller=1512595735867&compId=TPASection_j5jnv7z8&deviceType=desktop&height=2160&instance=NOn4aAVpnHrpF5r_wYrFp-r7Q1qf8Q71RQfM3qo7Pcs.eyJpbnN0YW5jZUlkIjoiOGExMzUwMzMtOThmNS00YTBjLWFlYWEtOGZiMGJhZGI4ZTFmIiwiYXBwRGVmSWQiOiIxNDcyNGYzNS02Nzk0LWNkMWEtMDI0NC0yNWZkMTM4ZjkyNDIiLCJzaWduRGF0ZSI6IjIwMTctMTItMDZUMjE6Mjg6NTIuMDgzWiIsInVpZCI6ImU3YjIwY2FmLWM5ODctNDVkNC1hMDAwLTVkYzg1ZWQ1NTkzZCIsImlwQW5kUG9ydCI6Ijk1Ljg0LjE4Mi41Mi81NDE5NCIsInZlbmRvclByb2R1Y3RJZCI6bnVsbCwiZGVtb01vZGUiOmZhbHNlLCJhaWQiOiJlN2IyMGNhZi1jOTg3LTQ1ZDQtYTAwMC01ZGM4NWVkNTU5M2QiLCJiaVRva2VuIjoiYTc2YWRlMWUtNjRiZi0wODg2LTI5ZGUtMjRhOTY4YmJkMzlmIiwic2l0ZU93bmVySWQiOiIxMDRlM2M3MC03Yzk4LTQ5YTMtYTk4Yy1hZGVjZmIyMGY4MjkifQ&locale=en&pageId=wqya4&section-url=https%3A%2F%2Fwww.brandlab.club%2Fforum%2F&target=_top&viewMode=site&vsi=31a264ac-72f1-4684-9522-0a68f4c87f9f&width=1280',
+    'Host': 'forums.wix.com',
     'Origin': 'https://www.brandlab.club',
     'Referer': 'https://www.brandlab.club/forum/baza-znaniy',
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
 }
+response = requests.get(url, headers)
+posts = response.content.decode('utf8').replace("'", '"')
+posts = json.loads(posts)
 
-formData = {
-    'email': '89505105005@mail.ru',
-    'password': 'DVilyavin89',
-    'rememberMe': 'false',
-    'collectionId': '14d49782-0975-85d9-4ebf-d8ce76a1da5f',
-    'metaSiteId': '2d798e2d-fc4a-428a-8774-ab19d2605d80',
-    'svSession': 'a0d8b9dab387f0b95db42a0aa0c86f3deabff126d4d80cda8d13b9bda934537e74e18c5fc85cf9c874fd9846e3b423ec1e60994d53964e647acf431e4f798bcd1490bfd9a0053c511e6623c437e5dad3b6c22ed7d7ccf428f3809f9832d84823',
-    'appUrl': 'https://www.brandlab.club/forum/baza-znaniy'
-}
 
-response = requests.post(url, formData, headers)
-print(response.headers)
-cookies = response.headers['Set-Cookie'].split(', ')
-XSRF_TOKEN = cookies[0].split('|')
-XSRF_TOKEN = XSRF_TOKEN[0][11:]
-ENC_KEY = cookies[0].split('|')[1].split(';')[0]
-print('XSRF_TOKEN: ', XSRF_TOKEN)
-print('ENCENC_KEY: ',ENC_KEY)
+while offset <= 5100:
+    offset += 20
+    print(offset)
+    url = 'https://forums.wix.com/_api/posts?categoryId=597751e9a5026f001007ec96&offset=' + str(offset) + '&size=20'
+    response = requests.get(url, headers)
+    content = response.content.decode('utf8')
+    content = json.loads(content)
+    posts += content
 
-# Информация о пользователе
-user = response.content.decode('utf8').replace("'", '"')
-user = json.loads(user)
-userString = json.dumps(user, indent=4, sort_keys=True)
-print('Пользователь:\n', userString, '\n\n')
-
-sessionToken = user['payload']['sessionToken']
-siteMemberDto = user['payload']['siteMemberDto']
-# collectionId = user['payload']['collectionId']
-# owner = user['payload']['owner']
-# name = user['payload']['name']
-# email = user['payload']['email']
-# attributes = user['payload']['attributes']
-# expirationDate = user['payload']['expirationDate']
-
-# 
-headers = {
-    'Accept': 'application/json',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
-    'Connection': 'keep-alive',
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Cookie': 'hs=' + XSRF_TOKEN + '; svSession=' + 'a0d8b9dab387f0b95db42a0aa0c86f3deabff126d4d80cda8d13b9bda934537e74e18c5fc85cf9c874fd9846e3b423ec1e60994d53964e647acf431e4f798bcd1490bfd9a0053c511e6623c437e5dad3b6c22ed7d7ccf428f3809f9832d84823',
-    'Host': 'www.brandlab.club',
-    'Origin': 'https://www.brandlab.club',
-    'Referer': 'https://www.brandlab.club/forum/baza-znaniy',
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
-}
-
-formData = {
-    'token': sessionToken
-}
-
-url = 'https://www.brandlab.club/_api/wix-sm/verify/2d798e2d-fc4a-428a-8774-ab19d2605d80/99298aaf-4a38-4d4a-ace4-da2fee87862c'
-
-response = requests.post(url, formData, headers=headers)
-print('Запрос-1:\n', response.content, '\n\n')
-
-# uClient = uReq(url)
-# page_html = uClient.read()
-# uClient.close()
-# pageSoup = soup(page_html, 'html.parser')
-
-# containers = pageSoup.findAll('div', {'class': 'item-container'})
-
-# f = open('data.txt', 'w')
-
-# for container in containers:
-#     brand = container.div.div.a.img['title']
-
-#     title_container = container.findAll('a', { 'class': 'item-title' })
-#     product_name = title_container[0].text
-
-#     shipping_container = container.findAll('li', { 'class': 'price-ship' })
-#     shipping_price = shipping_container[0].text.strip()
-
-#     f.write('brand: ' + brand + '\n' + 'product_name: ' + product_name + '\n' + 'shipping_price: ' + shipping_price + '\n\n\n')
-
-# f.close()
+handleData(posts)
