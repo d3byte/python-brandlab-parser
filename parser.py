@@ -2,7 +2,7 @@ import requests
 import json
 from data_handler import handleData
 offset = 40
-url = 'https://forums.wix.com/_api/posts?categoryId=597751e9a5026f001007ec96&offset=' + str(offset) + '&size=' + str(size)
+url = 'https://forums.wix.com/_api/posts?categoryId=597751e9a5026f001007ec96&offset=' + str(offset) + '&size=20'
 headers = {
     'Accept': 'application/json',
     'Accept-Encoding': 'gzip, deflate, br',
@@ -26,6 +26,54 @@ while offset <= 5100:
     offset += 20
     print(offset)
     url = 'https://forums.wix.com/_api/posts?categoryId=597751e9a5026f001007ec96&offset=' + str(offset) + '&size=20'
+    response = requests.get(url, headers)
+    content = response.content.decode('utf8')
+    content = json.loads(content)
+    posts += content
+
+offset = 40
+
+url = 'https://forums.wix.com/_api/posts?categoryId=597751e9a5026f001007ec96&offset=' + str(offset) + '&size=20'
+response = requests.get(url, headers)
+content = response.content.decode('utf8').replace("'", '"')
+posts += json.loads(content)
+
+while offset <= 2240:
+    offset += 20
+    print(offset)
+    url = 'https://forums.wix.com/_api/posts?categoryId=597751e9a5026f001007ec94&offset=' + str(offset) + '&size=20'
+    response = requests.get(url, headers)
+    content = response.content.decode('utf8')
+    content = json.loads(content)
+    posts += content
+
+offset = 40
+
+url = 'https://forums.wix.com/_api/posts?categoryId=597751e9a5026f001007ec96&offset=' + str(offset) + '&size=20'
+response = requests.get(url, headers)
+content = response.content.decode('utf8').replace("'", '"')
+posts += json.loads(content)
+
+while offset <= 2520:
+    offset += 20
+    print(offset)
+    url = 'https://forums.wix.com/_api/posts?categoryId=597755f27d5c7106248b2ca7&offset=' + str(offset) + '&size=20'
+    response = requests.get(url, headers)
+    content = response.content.decode('utf8')
+    content = json.loads(content)
+    posts += content
+
+offset = 40
+
+url = 'https://forums.wix.com/_api/posts?categoryId=597751e9a5026f001007ec96&offset=' + str(offset) + '&size=20'
+response = requests.get(url, headers)
+content = response.content.decode('utf8').replace("'", '"')
+posts += json.loads(content)
+
+while offset <= 3120:
+    offset += 20
+    print(offset)
+    url = 'https://forums.wix.com/_api/posts?categoryId=5977562c4f10e9001028f2e7&offset=' + str(offset) + '&size=20'
     response = requests.get(url, headers)
     content = response.content.decode('utf8')
     content = json.loads(content)
